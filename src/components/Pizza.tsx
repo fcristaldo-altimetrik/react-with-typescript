@@ -1,5 +1,5 @@
 import React from "react";
-
+import classes from "./Pizza.module.css";
 interface Pizza {
   id: number;
   name: string;
@@ -13,7 +13,7 @@ interface Props {
 
 const Pizza: React.FC<Props> = ({ pizza }) => {
   return (
-    <li>
+    <li className={classes.container}>
       <h1>{pizza.name}</h1>
       <p>{pizza.description}</p>
       <p> {pizza.price} </p>
