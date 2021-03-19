@@ -15,15 +15,16 @@ class Cart extends React.Component<Props, State> {
     };
   }
 
+  handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    this.setState((prevState) => ({ isOpen: !prevState.isOpen }));
+  };
   render() {
     return (
       <div className={classes.cartContainer}>
         <button
           type="button"
           className={classes.button}
-          onClick={() =>
-            this.setState((prevState) => ({ isOpen: !prevState.isOpen }))
-          }
+          onClick={this.handleClick}
         >
           <FiShoppingCart />
           <span>2 pizza(s)</span>
