@@ -1,6 +1,7 @@
 import React from "react";
 import classes from "./Cart.module.css";
 import { FiShoppingCart } from "react-icons/fi";
+import { AppStateContext } from "./AppState";
 interface Props {}
 
 interface State {
@@ -20,25 +21,32 @@ class Cart extends React.Component<Props, State> {
   };
   render() {
     return (
-      <div className={classes.cartContainer}>
-        <button
-          type="button"
-          className={classes.button}
-          onClick={this.handleClick}
-        >
-          <FiShoppingCart />
-          <span>2 pizza(s)</span>
-        </button>
-        <div
-          className={classes.cartDropDown}
-          style={{ display: this.state.isOpen ? "block" : "none" }}
-        >
-          <ul>
-            <li>Napoletana</li>
-            <li>Marinara</li>
-          </ul>
-        </div>
-      </div>
+      <AppStateContext.Consumer>
+        {(state) => (
+          <div className={classes.cartContainer}>
+            <button
+              type="button"
+              className={classes.button}
+              onClick={this.handleClick}
+            >
+              <FiShoppingCart />
+              <span>{state.cart.items.length} pizza(s)</span>
+            </button>
+            <div
+              className={classes.cartDropDown}
+              style={{ display: this.state.isOpen ? "block" : "none" }}
+            >
+              <ul>
+                {state.cart.items.map((item) => (
+                  <li key={item.id}>
+                    {item.name} &times; {item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </AppStateContext.Consumer>
     );
   }
 }
