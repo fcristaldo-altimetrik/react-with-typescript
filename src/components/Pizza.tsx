@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { AppSetStateContext, useSetState } from "./AppState";
+import React from "react";
+import { useStateDispatch } from "./AppState";
 import classes from "./Pizza.module.css";
 interface Pizza {
   id: number;
@@ -13,33 +13,19 @@ interface Props {
 }
 
 const Pizza: React.FC<Props> = ({ pizza }) => {
-  const setState = useSetState();
+  const dispatch = useStateDispatch();
 
   const handleAddToCartAction = () => {
-    setState((state) => {
-      const itemExists = state.cart.items.find((item) => item.id === pizza.id);
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          items: itemExists
-            ? state.cart.items.map((item) => {
-                if (item.id === pizza.id) {
-                  return { ...item, quantity: item.quantity + 1 };
-                }
-                return item;
-              })
-            : [
-                ...state.cart.items,
-                {
-                  id: pizza.id,
-                  name: pizza.name,
-                  price: pizza.price,
-                  quantity: 1
-                }
-              ]
+    const { id, price, name } = pizza;
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        item: {
+          id,
+          name,
+          price
         }
-      };
+      }
     });
   };
   return (

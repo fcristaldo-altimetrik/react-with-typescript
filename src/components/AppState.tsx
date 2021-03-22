@@ -1,14 +1,15 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useReducer, useState } from "react";
 
 interface AppStateValue {
   cart: {
-    items: {
-      id: number;
-      name: string;
-      price: number;
-      quantity: number;
-    }[];
+    items: CartItem[];
   };
+}
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
 }
 
 const defaultState: AppStateValue = {
@@ -18,25 +19,57 @@ const defaultState: AppStateValue = {
 };
 
 export const AppStateContext = createContext(defaultState);
-export const AppSetStateContext = createContext<
-  React.Dispatch<React.SetStateAction<AppStateValue>> | undefined
+export const AppDispatchContext = createContext<
+  React.Dispatch<AddToCartAction> | undefined
 >(undefined);
+interface Action<T> {
+  type: T;
+}
+interface AddToCartAction extends Action<"ADD_TO_CART"> {
+  payload: {
+    item: Omit<CartItem, "quantity">;
+  };
+}
 
-export const useSetState = () => {
-  const setState = useContext(AppSetStateContext);
+const reducer = (state: AppStateValue, action: AddToCartAction) => {
+  if ((action.type = "ADD_TO_CART")) {
+    const itemToAdd = action.payload.item;
+    const itemExists = state.cart.items.find(
+      (item) => item.id === itemToAdd.id
+    );
+    return {
+      ...state,
+      cart: {
+        ...state.cart,
+        items: itemExists
+          ? state.cart.items.map((item) => {
+              if (item.id === itemToAdd.id) {
+                return { ...item, quantity: item.quantity + 1 };
+              }
+              return item;
+            })
+          : [...state.cart.items, { ...itemToAdd, quantity: 1 }]
+      }
+    };
+  }
+  return state;
+};
+
+export const useStateDispatch = () => {
+  const setState = useContext(AppDispatchContext);
   if (!setState) {
-    throw new Error("useSetState was called outside of the context");
+    throw new Error("useStateDispatch was called outside of the context");
   }
   return setState;
 };
 const AppStateProvider: React.FC = ({ children }) => {
-  const [state, setState] = useState(defaultState);
+  const [state, dispatch] = useReducer(reducer, defaultState);
   return (
-    <AppSetStateContext.Provider value={setState}>
+    <AppDispatchContext.Provider value={dispatch}>
       <AppStateContext.Provider value={state}>
         {children}
       </AppStateContext.Provider>
-    </AppSetStateContext.Provider>
+    </AppDispatchContext.Provider>
   );
 };
 export default AppStateProvider;
