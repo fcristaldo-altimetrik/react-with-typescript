@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import pizzas from "../data/pizzas.json";
 import Pizza from "./Pizza";
 import AppCSS from "./App.module.css";
