@@ -51,3 +51,21 @@ export const WithAddToCartProps: React.FC<{children:(props:AddToCartProps)=>JSX.
   };
   return children({addToCart})
 };
+
+export const useAddToCart = () =>{
+  const dispatch = useStateDispatch();
+  const addToCart: AddToCartProps["addToCart"] = (item) => {
+    const { id, price, name } = item;
+    dispatch({
+      type: "ADD_TO_CART",
+      payload: {
+        item: {
+          id,
+          name,
+          price
+        }
+      }
+    });
+  };
+  return addToCart;
+}
